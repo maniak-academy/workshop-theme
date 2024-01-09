@@ -1,0 +1,83 @@
+<div class="resizable">
+  <div class="resizable__wrapper">
+    <div class="resizable__bar">
+      <svg
+        width="120"
+        height="14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="120" height="4" rx="2" fill="#434956"></rect>
+        <rect y="10" width="120" height="4" rx="2" fill="#434956"></rect>
+      </svg>
+    </div>
+    <div class="resizable__close-icon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          fill="currentColor"
+          d="M18.78 6.28a.75.75 0 00-1.06-1.06L12 10.94 6.28 5.22a.75.75 0 00-1.06 1.06L10.94 12l-5.72 5.72a.75.75 0 101.06 1.06L12 13.06l5.72 5.72a.75.75 0 101.06-1.06L13.06 12l5.72-5.72z"
+        ></path>
+      </svg>
+    </div>
+  </div>
+  <iframe
+    src="http://localhost:8080/?folder=/workspace/code"
+    width="100%"
+    height="100%"
+    frameborder="0"
+  ></iframe>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const resizable = document.querySelector(".resizable");
+    const openPopupButton = document.getElementById("open-popup-button");
+    const popupBar = document.querySelector(".resizable__bar");
+    const popupIframe = document.querySelector(".resizable iframe");
+    const popupCloseButton = document.querySelector(".resizable__close-icon");
+
+    openPopupButton.addEventListener("click", () => {
+      resizable.classList.toggle("active");
+    });
+
+    popupCloseButton.addEventListener("click", () => {
+      resizable.classList.remove("active");
+    });
+
+    interact(resizable).resizable({
+      edges: { bottom: true, top: true },
+
+      listeners: {
+        move(event) {
+          var target = event.target;
+          var y = parseFloat(target.getAttribute("data-y")) || 0;
+
+          resizable.style.height = event.rect.height + "px";
+
+          y += event.deltaRect.top;
+
+          target.setAttribute("data-y", y);
+        },
+      },
+      modifiers: [
+        interact.modifiers.restrictEdges({
+          outer: "parent",
+        }),
+
+        interact.modifiers.restrictSize({
+          min: { height: 250 },
+          max: { height: window.innerHeight - 70 },
+        }),
+      ],
+
+      inertia: true,
+    });
+  });
+</script>

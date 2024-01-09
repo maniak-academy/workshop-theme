@@ -1,0 +1,29 @@
+.resizable {
+  visibility: hidden;
+  &.active {
+    visibility: visible;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  &__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
+    background-color: #2b2c30;
+  }
+  &__bar {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  &__close-icon {
+    align-self: flex-end;
+    margin: 0 8px;
+    cursor: pointer;
+  }
+}
