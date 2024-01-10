@@ -28,7 +28,7 @@
     </div>
   </div>
   <iframe
-    src="https://ttyd-terminal.fly.dev/"
+    src="https://ttyd-terminal-demo.fly.dev/"
     width="100%"
     height="100%"
     frameborder="0"
@@ -36,48 +36,83 @@
 </div>
 
 <script>
-  window.addEventListener("DOMContentLoaded", () => {
     const resizable = document.querySelector(".resizable");
     const openPopupButton = document.getElementById("open-popup-button");
     const popupBar = document.querySelector(".resizable__bar");
     const popupIframe = document.querySelector(".resizable iframe");
     const popupCloseButton = document.querySelector(".resizable__close-icon");
+    const pageContent = document.querySelector('.content');
 
+
+    window.addEventListener('load', () => {
+      if (localStorage.getItem('showTerminal') === 'true') {
+        resizable.classList.add('active')
+        resizable.style.height = localStorage.getItem('iframeHeight') + 'px';
+        pageContent.style.paddingBottom = localStorage.getItem('iframeHeight') + 40 + 'px';
+      } else {
+        resizable.classList.remove('active');
+        pageContent.style.paddingBottom = '0px';
+      }
+    })
+
+
+  window.addEventListener("DOMContentLoaded", () => {
     openPopupButton.addEventListener("click", () => {
       resizable.classList.toggle("active");
+      if (resizable.classList.contains('active')) {
+        localStorage.setItem('showTerminal', true)
+      } else {
+        localStorage.setItem('showTerminal', false)
+      }
     });
 
     popupCloseButton.addEventListener("click", () => {
       resizable.classList.remove("active");
+      localStorage.setItem('showTerminal', false)
+      pageContent.style.paddingBottom = '0px';
     });
 
-    interact(resizable).resizable({
-      edges: { bottom: true, top: true },
+    if (window.innerWidth <= 576) {
+      resizable.style.height = "100vh";
+      resizable.style.maxHeight = "100%";
 
-      listeners: {
-        move(event) {
-          var target = event.target;
-          var y = parseFloat(target.getAttribute("data-y")) || 0;
+      popupBar.style.display = "none";
+      popupCloseButton.style.marginLeft = "auto";
+    } else {
+      interact(resizable).resizable({
+        edges: { bottom: true, top: true },
 
-          resizable.style.height = event.rect.height + "px";
+        listeners: {
+          move(event) {
+            var target = event.target;
+            var y = parseFloat(target.getAttribute("data-y")) || 0;
 
-          y += event.deltaRect.top;
+            resizable.style.height = event.rect.height + "px";
 
-          target.setAttribute("data-y", y);
+            pageContent.style.paddingBottom = event.rect.height + 40 + "px";
+
+            y += event.deltaRect.top;
+
+            target.setAttribute("data-y", y);
+
+            localStorage.setItem('iframeHeight', event.rect.height);
+          },
         },
-      },
-      modifiers: [
-        interact.modifiers.restrictEdges({
-          outer: "parent",
-        }),
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: "parent",
+          }),
 
-        interact.modifiers.restrictSize({
-          min: { height: 250 },
-          max: { height: window.innerHeight - 70 },
-        }),
-      ],
+          interact.modifiers.restrictSize({
+            min: { height: 250 },
+            max: { height: window.innerHeight - 70 },
+          }),
+        ],
 
-      inertia: true,
-    });
+        inertia: true,
+      });
+      popupBar.style.display = "block";
+      popupCloseButton.style.marginLeft = "initial";
+    }
   });
 </script>
